@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace SlimAD\IndexNow\Laravel\Config;
 
 use Illuminate\Contracts\Config\Repository;
+use Illuminate\Support\Str;
 
 /**
  * How the package talks to an IndexNow endpoint.
  */
-final class HttpOptions
+final readonly class HttpOptions
 {
     public const DEFAULT_TIMEOUT = 10;
 
@@ -22,21 +23,21 @@ final class HttpOptions
     public const DEFAULT_USER_AGENT = 'slimad-indexnow-laravel (+https://github.com/maciej-kosiedowski/IndexNow-for-Laravel)';
 
     public function __construct(
-        public readonly int $timeout,
-        public readonly int $connectTimeout,
-        public readonly int $retries,
-        public readonly int $retryDelay,
-        public readonly string $userAgent,
+        public int $timeout,
+        public int $connectTimeout,
+        public int $retries,
+        public int $retryDelay,
+        public string $userAgent,
     ) {}
 
     public static function fromConfig(Repository $config): self
     {
         return new self(
-            ConfigValues::int($config, 'indexnow.http.timeout', self::DEFAULT_TIMEOUT),
-            ConfigValues::int($config, 'indexnow.http.connect_timeout', self::DEFAULT_CONNECT_TIMEOUT),
-            max(1, ConfigValues::int($config, 'indexnow.http.retries', self::DEFAULT_RETRIES)),
-            ConfigValues::int($config, 'indexnow.http.retry_delay', self::DEFAULT_RETRY_DELAY),
-            ConfigValues::string($config, 'indexnow.http.user_agent') ?? self::DEFAULT_USER_AGENT,
+            (int) $config->get('indexnow.http.timeout') ?: self::DEFAULT_TIMEOUT,
+            (int) $config->get('indexnow.http.connect_timeout') ?: self::DEFAULT_CONNECT_TIMEOUT,
+            max(1, (int) ($config->get('indexnow.http.retries') ?? self::DEFAULT_RETRIES)),
+            (int) ($config->get('indexnow.http.retry_delay') ?? self::DEFAULT_RETRY_DELAY),
+            Str::squish((string) $config->get('indexnow.http.user_agent')) ?: self::DEFAULT_USER_AGENT,
         );
     }
 }

@@ -20,13 +20,13 @@ use SlimAD\IndexNow\ValueObject\Url;
  *
  * A cache flush loses the queue; use the database store when that matters.
  */
-final class CacheUrlStore implements UrlStore
+final readonly class CacheUrlStore implements UrlStore
 {
     public function __construct(
-        private readonly Repository $cache,
-        public readonly string $key,
-        public readonly int $ttl,
-        public readonly int $lockSeconds,
+        private Repository $cache,
+        public string $key,
+        public int $ttl,
+        public int $lockSeconds,
     ) {}
 
     public function add(Url $url): void

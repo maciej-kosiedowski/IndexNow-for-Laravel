@@ -25,7 +25,7 @@ use SlimAD\IndexNow\ValueObject\Url;
  * happens when {@see self::flush()} runs, normally from the scheduler or a queue
  * worker.
  */
-final class IndexNowManager
+final readonly class IndexNowManager
 {
     /**
      * The submit job is resolved lazily: building it needs a complete IndexNow
@@ -35,12 +35,12 @@ final class IndexNowManager
      * @param  Closure(): SubmitJob  $job
      */
     public function __construct(
-        private readonly UrlStore $store,
-        private readonly Closure $job,
-        private readonly EventDispatcher $events,
-        private readonly BusDispatcher $bus,
-        private readonly bool $enabled,
-        private readonly QueueOptions $queue,
+        private UrlStore $store,
+        private Closure $job,
+        private EventDispatcher $events,
+        private BusDispatcher $bus,
+        private bool $enabled,
+        private QueueOptions $queue,
     ) {}
 
     public function isEnabled(): bool

@@ -15,11 +15,11 @@ use SlimAD\IndexNow\Laravel\Config\HttpOptions;
  * Submits through Laravel's HTTP client, so timeouts, retries and `Http::fake()`
  * all behave the way the rest of the application expects.
  */
-final class LaravelHttpIndexNowClient implements IndexNowClient
+final readonly class LaravelHttpIndexNowClient implements IndexNowClient
 {
     public function __construct(
-        private readonly Factory $http,
-        private readonly HttpOptions $options,
+        private Factory $http,
+        private HttpOptions $options,
     ) {}
 
     public function submit(SubmitRequest $request): void

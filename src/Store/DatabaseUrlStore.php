@@ -18,11 +18,11 @@ use SlimAD\IndexNow\ValueObject\Url;
  * URLs are deduplicated on a SHA-256 hash rather than on the URL itself: MySQL
  * caps a unique index at 3072 bytes, which is not enough for a long URL column.
  */
-final class DatabaseUrlStore implements UrlStore
+final readonly class DatabaseUrlStore implements UrlStore
 {
     public function __construct(
-        private readonly ConnectionInterface $connection,
-        public readonly string $table,
+        private ConnectionInterface $connection,
+        public string $table,
     ) {}
 
     public function add(Url $url): void

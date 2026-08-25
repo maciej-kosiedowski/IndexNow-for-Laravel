@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace SlimAD\IndexNow\Laravel\Events;
 
-final class UrlsQueued
+final readonly class UrlsQueued
 {
     /**
      * @param  list<string>  $urls

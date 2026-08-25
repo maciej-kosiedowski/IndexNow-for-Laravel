@@ -122,6 +122,31 @@ final class ConfigurationOptionsTest extends TestCase
         Http::assertSentCount(2);
     }
 
+    public function test_a_string_batch_size_splits_the_queue(): void
+    {
+        $this->config()->set('indexnow.batch_size', '2');
+        $this->config()->set('indexnow.http.retries', 1);
+        $this->container()->forgetInstance(\SlimAD\IndexNow\Job\SubmitJob::class);
+
+        Http::fake([self::ENDPOINT => Http::response('', 202)]);
+
+        $manager = $this->freshManager();
+        $manager->submit('https://example.com/a', 'https://example.com/b', 'https://example.com/c');
+        $manager->flush();
+
+        Http::assertSentCount(2);
+    }
+
+    public function test_the_master_switch_accepts_the_integer_env_shape(): void
+    {
+        $this->config()->set('indexnow.enabled', 0);
+
+        $manager = $this->freshManager();
+
+        self::assertFalse($manager->isEnabled());
+        self::assertSame(0, $manager->submit('https://example.com/a'));
+    }
+
     public function test_an_oversized_batch_size_is_capped_at_the_protocol_limit(): void
     {
         $this->config()->set('indexnow.batch_size', 999999);

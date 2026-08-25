@@ -38,6 +38,28 @@ final class QueueOptionsTest extends TestCase
         self::assertSame([1, 2, 3], $options->backoff);
     }
 
+    public function test_it_coerces_the_strings_env_hands_over(): void
+    {
+        $options = QueueOptions::fromConfig(new Repository(['indexnow' => ['queue' => [
+            'enabled' => 0,
+            'connection' => '  redis  ',
+            'tries' => '7',
+        ]]]));
+
+        self::assertFalse($options->enabled);
+        self::assertSame('redis', $options->connection);
+        self::assertSame(7, $options->tries);
+    }
+
+    public function test_a_zero_second_backoff_is_kept(): void
+    {
+        $options = QueueOptions::fromConfig(new Repository(['indexnow' => ['queue' => [
+            'backoff' => [0, 60],
+        ]]]));
+
+        self::assertSame([0, 60], $options->backoff, 'retrying immediately is a valid choice');
+    }
+
     public function test_it_always_allows_at_least_one_attempt(): void
     {
         $options = QueueOptions::fromConfig(new Repository(['indexnow' => ['queue' => ['tries' => 0]]]));

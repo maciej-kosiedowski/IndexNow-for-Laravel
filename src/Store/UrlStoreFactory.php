@@ -8,7 +8,8 @@ use Illuminate\Contracts\Cache\Factory as CacheFactory;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Database\ConnectionResolverInterface;
-use SlimAD\IndexNow\Laravel\Config\ConfigValues;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use SlimAD\IndexNow\Laravel\Exceptions\IndexNowConfigurationException;
 use SlimAD\IndexNow\Store\InMemoryUrlStore;
 use SlimAD\IndexNow\Store\UrlStore;
@@ -16,13 +17,8 @@ use SlimAD\IndexNow\Store\UrlStore;
 /**
  * Builds the pending URL store named by `indexnow.store`.
  */
-final class UrlStoreFactory
+final readonly class UrlStoreFactory
 {
-    public function __construct(
-        private readonly Container $container,
-        private readonly Repository $config,
-    ) {}
-
     public const DEFAULT_STORE = 'cache';
 
     public const DEFAULT_CACHE_KEY = 'indexnow:pending';
@@ -33,21 +29,27 @@ final class UrlStoreFactory
 
     public const DEFAULT_TABLE = 'indexnow_urls';
 
+    public function __construct(
+        private Container $container,
+        private Repository $config,
+    ) {}
+
     public function make(): UrlStore
     {
-        $name = ConfigValues::string($this->config, 'indexnow.store') ?? self::DEFAULT_STORE;
+        $name = Str::squish((string) $this->config->get('indexnow.store')) ?: self::DEFAULT_STORE;
 
         $stores = $this->config->get('indexnow.stores');
         $stores = \is_array($stores) ? $stores : [];
 
+        // Not Arr::get(): a store name may legitimately contain a dot, and dot
+        // traversal would then look up a nested array that does not exist.
         $settings = $stores[$name] ?? null;
 
         if (! \is_array($settings)) {
             throw IndexNowConfigurationException::unknownStore($name, array_keys($stores));
         }
 
-        $driver = $settings['driver'] ?? $name;
-        $driver = \is_string($driver) ? $driver : '';
+        $driver = Str::squish((string) Arr::get($settings, 'driver')) ?: $name;
 
         return match ($driver) {
             'array' => new InMemoryUrlStore,
@@ -65,10 +67,10 @@ final class UrlStoreFactory
         $cache = $this->container->make(CacheFactory::class);
 
         return new CacheUrlStore(
-            $cache->store(ConfigValues::toString($settings['store'] ?? null)),
-            ConfigValues::toString($settings['key'] ?? null) ?? self::DEFAULT_CACHE_KEY,
-            ConfigValues::toPositiveInt($settings['ttl'] ?? null, self::DEFAULT_CACHE_TTL),
-            ConfigValues::toPositiveInt($settings['lock_seconds'] ?? null, self::DEFAULT_LOCK_SECONDS),
+            $cache->store(self::text($settings, 'store')),
+            self::text($settings, 'key') ?? self::DEFAULT_CACHE_KEY,
+            self::positiveInt($settings, 'ttl', self::DEFAULT_CACHE_TTL),
+            self::positiveInt($settings, 'lock_seconds', self::DEFAULT_LOCK_SECONDS),
         );
     }
 
@@ -80,8 +82,28 @@ final class UrlStoreFactory
         $connections = $this->container->make(ConnectionResolverInterface::class);
 
         return new DatabaseUrlStore(
-            $connections->connection(ConfigValues::toString($settings['connection'] ?? null)),
-            ConfigValues::toString($settings['table'] ?? null) ?? self::DEFAULT_TABLE,
+            $connections->connection(self::text($settings, 'connection')),
+            self::text($settings, 'table') ?? self::DEFAULT_TABLE,
         );
+    }
+
+    /**
+     * A trimmed, non-blank setting, or null when it is not set.
+     *
+     * @param  array<array-key, mixed>  $settings
+     */
+    private static function text(array $settings, string $key): ?string
+    {
+        return Str::squish((string) Arr::get($settings, $key)) ?: null;
+    }
+
+    /**
+     * @param  array<array-key, mixed>  $settings
+     */
+    private static function positiveInt(array $settings, string $key, int $default): int
+    {
+        $value = (int) Arr::get($settings, $key);
+
+        return $value > 0 ? $value : $default;
     }
 }

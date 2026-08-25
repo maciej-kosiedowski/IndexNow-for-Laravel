@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace SlimAD\IndexNow\Laravel\Config;
 
 use Illuminate\Contracts\Config\Repository;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use SlimAD\IndexNow\Config\IndexNowConfig;
 use SlimAD\IndexNow\Config\SearchEngine;
 use SlimAD\IndexNow\Laravel\Exceptions\IndexNowConfigurationException;
@@ -16,9 +18,9 @@ use SlimAD\IndexNow\ValueObject\KeyLocation;
  * Turns the `config/indexnow.php` array into the value objects the core package
  * works with, failing with an actionable message when something is missing.
  */
-final class IndexNowConfigFactory
+final readonly class IndexNowConfigFactory
 {
-    public function __construct(private readonly Repository $config) {}
+    public function __construct(private Repository $config) {}
 
     /**
      * @throws \SlimAD\IndexNow\Exception\IndexNowException when the configuration is incomplete or invalid
@@ -27,7 +29,7 @@ final class IndexNowConfigFactory
     {
         $host = new Host($this->required('indexnow.host', 'INDEXNOW_HOST'));
         $key = $this->required('indexnow.key', 'INDEXNOW_KEY');
-        $keyLocation = $this->optional('indexnow.key_location')
+        $keyLocation = $this->text('indexnow.key_location')
             ?? self::defaultKeyLocation($host->value, $key);
 
         $engines = $this->config->get('indexnow.engines');
@@ -42,21 +44,21 @@ final class IndexNowConfigFactory
             $name = (string) $name;
             $engine = \is_array($engine) ? $engine : [];
 
-            $endpoint = self::stringOrNull($engine['endpoint'] ?? null);
+            $endpoint = Str::squish((string) Arr::get($engine, 'endpoint'));
 
-            if ($endpoint === null) {
+            if ($endpoint === '') {
                 throw IndexNowConfigurationException::missingEngineEndpoint($name);
             }
 
-            $engineKey = self::stringOrNull($engine['key'] ?? null) ?? $key;
+            $engineKey = Str::squish((string) Arr::get($engine, 'key')) ?: $key;
 
             $configured[] = new SearchEngine(
                 $name,
                 $endpoint,
                 new Key($engineKey),
                 KeyLocation::fromString(
-                    self::stringOrNull($engine['key_location'] ?? null)
-                        ?? ($engineKey === $key
+                    Str::squish((string) Arr::get($engine, 'key_location'))
+                        ?: ($engineKey === $key
                             ? $keyLocation
                             : self::defaultKeyLocation($host->value, $engineKey)),
                 ),
@@ -76,28 +78,15 @@ final class IndexNowConfigFactory
 
     private function required(string $key, string $environmentVariable): string
     {
-        $value = $this->optional($key);
-
-        if ($value === null) {
-            throw IndexNowConfigurationException::missingValue($key, $environmentVariable);
-        }
-
-        return $value;
+        return $this->text($key)
+            ?? throw IndexNowConfigurationException::missingValue($key, $environmentVariable);
     }
 
-    private function optional(string $key): ?string
+    /**
+     * A trimmed, non-blank configuration string, or null when it is not set.
+     */
+    private function text(string $key): ?string
     {
-        return self::stringOrNull($this->config->get($key));
-    }
-
-    private static function stringOrNull(mixed $value): ?string
-    {
-        if (! \is_string($value)) {
-            return null;
-        }
-
-        $trimmed = trim($value);
-
-        return $trimmed === '' ? null : $trimmed;
+        return Str::squish((string) $this->config->get($key)) ?: null;
     }
 }

@@ -6,7 +6,7 @@ namespace SlimAD\IndexNow\Laravel\Events;
 
 use SlimAD\IndexNow\Exception\SubmitFailedException;
 
-final class SubmissionFailed
+final readonly class SubmissionFailed
 {
     public function __construct(public readonly SubmitFailedException $failure) {}
 }

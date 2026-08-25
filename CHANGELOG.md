@@ -23,7 +23,9 @@ Initial implementation of the Laravel integration for `slimad/indexnow`:
 * Artisan commands: `indexnow:flush`, `indexnow:submit`, `indexnow:status` and `indexnow:key`.
 * Optional scheduler binding and an optional `/{key}.txt` route that serves the key file.
 * `SubmitsToIndexNow` trait and `ProvidesIndexNowUrls` contract for Eloquent models.
-* Events: `UrlsQueued`, `SubmissionCompleted` and `SubmissionFailed`.
+* Events: `UrlsQueued`, `SubmissionCompleted` and `SubmissionFailed` - `readonly` classes, like
+  every other service and value object the package binds, so nothing can be changed after it is
+  constructed.
 * Continuous integration: coding standards, static analysis, a Laravel 11/12/13 × PHP 8.2-8.4
   matrix, a 100% line coverage gate, mutation testing, `composer audit` and Dependabot.
 

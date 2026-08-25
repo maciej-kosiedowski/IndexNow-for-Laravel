@@ -12,11 +12,11 @@ use Illuminate\Contracts\Events\Dispatcher as EventDispatcher;
 use Illuminate\Http\Client\Factory as HttpFactory;
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
 use SlimAD\IndexNow\Client\IndexNowClient;
 use SlimAD\IndexNow\Config\IndexNowConfig;
 use SlimAD\IndexNow\Job\SubmitJob;
 use SlimAD\IndexNow\Laravel\Client\LaravelHttpIndexNowClient;
-use SlimAD\IndexNow\Laravel\Config\ConfigValues;
 use SlimAD\IndexNow\Laravel\Config\HttpOptions;
 use SlimAD\IndexNow\Laravel\Config\IndexNowConfigFactory;
 use SlimAD\IndexNow\Laravel\Config\QueueOptions;
@@ -72,11 +72,8 @@ final class IndexNowServiceProvider extends ServiceProvider
         ));
 
         $this->app->singleton(SubmitJob::class, static function (Container $app): SubmitJob {
-            $batchSize = ConfigValues::int(
-                $app->make(Repository::class),
-                'indexnow.batch_size',
-                SubmitJob::MAX_URLS_PER_REQUEST,
-            );
+            $batchSize = (int) ($app->make(Repository::class)->get('indexnow.batch_size')
+                ?? SubmitJob::MAX_URLS_PER_REQUEST);
 
             return new SubmitJob(
                 $app->make(UrlStore::class),
@@ -91,7 +88,7 @@ final class IndexNowServiceProvider extends ServiceProvider
             static fn (): SubmitJob => $app->make(SubmitJob::class),
             $app->make(EventDispatcher::class),
             $app->make(BusDispatcher::class),
-            ConfigValues::bool($app->make(Repository::class), 'indexnow.enabled', true),
+            (bool) ($app->make(Repository::class)->get('indexnow.enabled') ?? true),
             $app->make(QueueOptions::class),
         ));
 
@@ -127,13 +124,13 @@ final class IndexNowServiceProvider extends ServiceProvider
     {
         $config = $this->app->make(Repository::class);
 
-        if (! ConfigValues::bool($config, 'indexnow.key_route.enabled', false)) {
+        if (! $config->get('indexnow.key_route.enabled')) {
             return;
         }
 
-        $key = ConfigValues::string($config, 'indexnow.key');
+        $key = Str::squish((string) $config->get('indexnow.key'));
 
-        if ($key === null) {
+        if ($key === '') {
             return;
         }
 
@@ -152,11 +149,11 @@ final class IndexNowServiceProvider extends ServiceProvider
         // something resolves the Schedule, which only Artisan does.
         $config = $this->app->make(Repository::class);
 
-        if (! ConfigValues::bool($config, 'indexnow.schedule.enabled', false)) {
+        if (! $config->get('indexnow.schedule.enabled')) {
             return;
         }
 
-        $cron = ConfigValues::string($config, 'indexnow.schedule.cron') ?? self::DEFAULT_CRON;
+        $cron = Str::squish((string) $config->get('indexnow.schedule.cron')) ?: self::DEFAULT_CRON;
 
         $this->callAfterResolving(Schedule::class, static function (Schedule $schedule) use ($cron): void {
             $schedule->command('indexnow:flush')

@@ -33,6 +33,18 @@ final class SubmitQueuedUrlsJobTest extends TestCase
         self::assertSame(30, $job->uniqueFor);
     }
 
+    public function test_it_survives_the_queue_payload(): void
+    {
+        $job = new SubmitQueuedUrlsJob(5, [1, 2], 30);
+
+        $restored = unserialize(serialize($job));
+
+        self::assertInstanceOf(SubmitQueuedUrlsJob::class, $restored);
+        self::assertSame(5, $restored->tries);
+        self::assertSame([1, 2], $restored->backoff);
+        self::assertSame(30, $restored->uniqueFor);
+    }
+
     public function test_handle_drains_the_queue(): void
     {
         Http::fake([self::ENDPOINT => Http::response('', 202)]);

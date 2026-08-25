@@ -21,22 +21,14 @@ final class SubmitQueuedUrlsJob implements ShouldBeUnique, ShouldQueue
     use InteractsWithQueue;
     use Queueable;
 
-    public int $tries;
-
-    /** @var list<int> */
-    public array $backoff;
-
-    public int $uniqueFor;
-
     /**
      * @param  list<int>  $backoff
      */
-    public function __construct(int $tries = 3, array $backoff = [60, 300, 900], int $uniqueFor = 300)
-    {
-        $this->tries = $tries;
-        $this->backoff = $backoff;
-        $this->uniqueFor = $uniqueFor;
-    }
+    public function __construct(
+        public readonly int $tries = 3,
+        public readonly array $backoff = [60, 300, 900],
+        public readonly int $uniqueFor = 300,
+    ) {}
 
     public function uniqueId(): string
     {
