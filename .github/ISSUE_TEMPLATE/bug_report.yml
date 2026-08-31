@@ -1,0 +1,78 @@
+name: Bug report
+description: Something in the package does not behave as documented.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report. Please do **not** paste your IndexNow key — it identifies
+        your site and it is not needed to reproduce a bug.
+
+  - type: input
+    id: package-version
+    attributes:
+      label: Package version
+      placeholder: 1.0.0
+    validations:
+      required: true
+
+  - type: input
+    id: laravel-version
+    attributes:
+      label: Laravel version
+      placeholder: "13.2.0"
+    validations:
+      required: true
+
+  - type: input
+    id: php-version
+    attributes:
+      label: PHP version
+      placeholder: "8.3.14"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: store
+    attributes:
+      label: Pending URL store
+      options:
+        - cache
+        - database
+        - array
+        - custom
+    validations:
+      required: true
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Include the exception message and stack trace if there is one.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect to happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: config
+    attributes:
+      label: Relevant configuration
+      description: Your config/indexnow.php, with the key redacted.
+      render: php
+    validations:
+      required: false
+
+  - type: textarea
+    id: reproducer
+    attributes:
+      label: Minimal reproducer
+      description: The shortest snippet that shows the problem.
+      render: php
+    validations:
+      required: true
