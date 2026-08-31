@@ -9,6 +9,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use SlimAD\IndexNow\Config\IndexNowConfig;
 use SlimAD\IndexNow\Config\SearchEngine;
+use SlimAD\IndexNow\Exception\IndexNowException;
 use SlimAD\IndexNow\Laravel\Exceptions\IndexNowConfigurationException;
 use SlimAD\IndexNow\ValueObject\Host;
 use SlimAD\IndexNow\ValueObject\Key;
@@ -23,7 +24,7 @@ final readonly class IndexNowConfigFactory
     public function __construct(private Repository $config) {}
 
     /**
-     * @throws \SlimAD\IndexNow\Exception\IndexNowException when the configuration is incomplete or invalid
+     * @throws IndexNowException when the configuration is incomplete or invalid
      */
     public function make(): IndexNowConfig
     {

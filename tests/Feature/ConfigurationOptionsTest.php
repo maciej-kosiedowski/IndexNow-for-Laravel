@@ -6,7 +6,9 @@ namespace SlimAD\IndexNow\Laravel\Tests\Feature;
 
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Http;
+use PHPUnit\Framework\Attributes\DataProvider;
 use SlimAD\IndexNow\Client\IndexNowClient;
+use SlimAD\IndexNow\Job\SubmitJob;
 use SlimAD\IndexNow\Laravel\Config\HttpOptions;
 use SlimAD\IndexNow\Laravel\Config\QueueOptions;
 use SlimAD\IndexNow\Laravel\IndexNowManager;
@@ -90,7 +92,7 @@ final class ConfigurationOptionsTest extends TestCase
     /**
      * @param  list<int>  $expected
      */
-    #[\PHPUnit\Framework\Attributes\DataProvider('backoffProvider')]
+    #[DataProvider('backoffProvider')]
     public function test_the_queue_backoff_is_normalised(mixed $configured, array $expected): void
     {
         $this->config()->set('indexnow.queue.enabled', true);
@@ -111,7 +113,7 @@ final class ConfigurationOptionsTest extends TestCase
     {
         $this->config()->set('indexnow.batch_size', 1);
         $this->config()->set('indexnow.http.retries', 1);
-        $this->container()->forgetInstance(\SlimAD\IndexNow\Job\SubmitJob::class);
+        $this->container()->forgetInstance(SubmitJob::class);
 
         Http::fake([self::ENDPOINT => Http::response('', 202)]);
 
@@ -126,7 +128,7 @@ final class ConfigurationOptionsTest extends TestCase
     {
         $this->config()->set('indexnow.batch_size', '2');
         $this->config()->set('indexnow.http.retries', 1);
-        $this->container()->forgetInstance(\SlimAD\IndexNow\Job\SubmitJob::class);
+        $this->container()->forgetInstance(SubmitJob::class);
 
         Http::fake([self::ENDPOINT => Http::response('', 202)]);
 
@@ -151,7 +153,7 @@ final class ConfigurationOptionsTest extends TestCase
     {
         $this->config()->set('indexnow.batch_size', 999999);
         $this->config()->set('indexnow.http.retries', 1);
-        $this->container()->forgetInstance(\SlimAD\IndexNow\Job\SubmitJob::class);
+        $this->container()->forgetInstance(SubmitJob::class);
 
         Http::fake([self::ENDPOINT => Http::response('', 202)]);
 
@@ -166,7 +168,7 @@ final class ConfigurationOptionsTest extends TestCase
     {
         $this->config()->set('indexnow.batch_size', 0);
         $this->config()->set('indexnow.http.retries', 1);
-        $this->container()->forgetInstance(\SlimAD\IndexNow\Job\SubmitJob::class);
+        $this->container()->forgetInstance(SubmitJob::class);
 
         Http::fake([self::ENDPOINT => Http::response('', 202)]);
 

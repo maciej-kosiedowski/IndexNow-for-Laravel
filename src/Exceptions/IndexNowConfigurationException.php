@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace SlimAD\IndexNow\Laravel\Exceptions;
 
 use SlimAD\IndexNow\Exception\IndexNowException;
+use SlimAD\IndexNow\Laravel\Contracts\ProvidesIndexNowUrls;
 
 final class IndexNowConfigurationException extends IndexNowException
 {
@@ -58,7 +59,7 @@ final class IndexNowConfigurationException extends IndexNowException
         return new self(\sprintf(
             'Model %s uses the SubmitsToIndexNow trait but does not implement %s.',
             $model,
-            \SlimAD\IndexNow\Laravel\Contracts\ProvidesIndexNowUrls::class,
+            ProvidesIndexNowUrls::class,
         ));
     }
 }

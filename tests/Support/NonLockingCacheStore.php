@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace SlimAD\IndexNow\Laravel\Tests\Support;
 
 use Illuminate\Contracts\Cache\Store;
+use SlimAD\IndexNow\Laravel\Store\CacheUrlStore;
 
 /**
  * A cache store that deliberately does not implement LockProvider, so the
- * lock-less branch of {@see \SlimAD\IndexNow\Laravel\Store\CacheUrlStore} can be
- * exercised (the built-in array store does support locking).
+ * lock-less branch of {@see CacheUrlStore} can be exercised (the built-in array
+ * store does support locking).
  */
 final class NonLockingCacheStore implements Store
 {
@@ -68,6 +69,18 @@ final class NonLockingCacheStore implements Store
     public function forever($key, $value): bool
     {
         return $this->put($key, $value, 0);
+    }
+
+    /**
+     * Laravel 13 added this to the Store contract; the double keeps no TTLs, so
+     * there is nothing to move but the answer still has to be truthful.
+     *
+     * @param  string  $key
+     * @param  int  $seconds
+     */
+    public function touch($key, $seconds): bool
+    {
+        return \array_key_exists($key, $this->items);
     }
 
     public function forget($key): bool
