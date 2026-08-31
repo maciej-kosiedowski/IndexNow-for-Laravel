@@ -41,7 +41,7 @@ retried on the next run instead of being lost.
 ## Requirements
 
 * PHP 8.2+
-* Laravel 11, 12 or 13
+* Laravel 12 or 13
 
 ## Installation
 
@@ -324,7 +324,7 @@ immediately and prints what happened.
 
 ## Quality gates
 
-* PHP 8.2, 8.3 and 8.4 × Laravel 11, 12 and 13, plus a lowest-dependency run
+* PHP 8.2, 8.3 and 8.4 × Laravel 12 and 13, plus a lowest-dependency run
 * 100% line coverage, enforced in CI
 * Mutation testing with [Infection](https://infection.github.io/)
 * Larastan level 8, no baseline

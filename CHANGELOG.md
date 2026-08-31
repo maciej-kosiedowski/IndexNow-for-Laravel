@@ -26,7 +26,7 @@ Initial implementation of the Laravel integration for `slimad/indexnow`:
 * Events: `UrlsQueued`, `SubmissionCompleted` and `SubmissionFailed` - `readonly` classes, like
   every other service and value object the package binds, so nothing can be changed after it is
   constructed.
-* Continuous integration: coding standards, static analysis, a Laravel 11/12/13 × PHP 8.2-8.4
+* Continuous integration: coding standards, static analysis, a Laravel 12/13 × PHP 8.2-8.4
   matrix, a 100% line coverage gate, mutation testing, `composer audit` and Dependabot.
 
 [Unreleased]: https://github.com/maciej-kosiedowski/IndexNow-for-Laravel/compare/master...HEAD
