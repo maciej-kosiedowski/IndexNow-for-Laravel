@@ -9,7 +9,8 @@ repos:
           (?x)^(
             .*\.lock|
             package-lock\.json|
-            \.secrets\.baseline
+            \.secrets\.baseline|
+            \.gitleaks-baseline\.json
           )$
 
   - repo: https://github.com/gitleaks/gitleaks
