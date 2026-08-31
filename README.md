@@ -204,7 +204,7 @@ Every setting has an environment variable, so the published config file is optio
 | `http.connect_timeout` | `INDEXNOW_HTTP_CONNECT_TIMEOUT` | `5` | Connection timeout in seconds. |
 | `http.retries` | `INDEXNOW_HTTP_RETRIES` | `3` | Attempts per request. |
 | `http.retry_delay` | `INDEXNOW_HTTP_RETRY_DELAY` | `250` | Milliseconds between attempts. |
-| `http.user_agent` | `INDEXNOW_HTTP_USER_AGENT` | package default | Identify your own application. |
+| `http.user_agent` | `INDEXNOW_HTTP_USER_AGENT` | `slimad/indexnow-laravel` | Identify your own application. |
 | `queue.enabled` | `INDEXNOW_QUEUE_ENABLED` | `true` | Submit from a queue worker instead of inline. |
 | `queue.connection` | `INDEXNOW_QUEUE_CONNECTION` | app default | Queue connection for the job. |
 | `queue.queue` | `INDEXNOW_QUEUE` | app default | Queue name for the job. |

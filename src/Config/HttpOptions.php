@@ -20,7 +20,7 @@ final readonly class HttpOptions
 
     public const DEFAULT_RETRY_DELAY = 250;
 
-    public const DEFAULT_USER_AGENT = 'slimad-indexnow-laravel (+https://github.com/maciej-kosiedowski/IndexNow-for-Laravel)';
+    public const DEFAULT_USER_AGENT = 'slimad/indexnow-laravel';
 
     public function __construct(
         public int $timeout,

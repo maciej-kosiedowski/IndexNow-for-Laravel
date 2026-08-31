@@ -35,9 +35,6 @@ jobs:
       - name: Validate composer.json
         run: composer validate --strict
 
-      - name: Resolve the core package
-        run: .github/scripts/resolve-core-package.sh
-
       - name: Install dependencies
         uses: ramsey/composer-install@v3
 
@@ -57,9 +54,6 @@ jobs:
           php-version: '8.3'
           coverage: none
           tools: composer:v2
-
-      - name: Resolve the core package
-        run: .github/scripts/resolve-core-package.sh
 
       - name: Install dependencies
         uses: ramsey/composer-install@v3
@@ -101,9 +95,6 @@ jobs:
           ini-values: error_reporting=-1, display_errors=On
           tools: composer:v2
 
-      - name: Resolve the core package
-        run: .github/scripts/resolve-core-package.sh
-
       - name: Pin the framework version
         run: >
           composer require --dev --no-interaction --no-update
@@ -133,9 +124,6 @@ jobs:
           coverage: pcov
           tools: composer:v2
 
-      - name: Resolve the core package
-        run: .github/scripts/resolve-core-package.sh
-
       - name: Install dependencies
         uses: ramsey/composer-install@v3
 
@@ -160,9 +148,6 @@ jobs:
           extensions: pdo_sqlite, sqlite3
           coverage: pcov
           tools: composer:v2
-
-      - name: Resolve the core package
-        run: .github/scripts/resolve-core-package.sh
 
       - name: Install dependencies
         uses: ramsey/composer-install@v3

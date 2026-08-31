@@ -27,9 +27,6 @@ jobs:
           coverage: none
           tools: composer:v2
 
-      - name: Resolve the core package
-        run: .github/scripts/resolve-core-package.sh
-
       - name: Install dependencies
         uses: ramsey/composer-install@v3
 

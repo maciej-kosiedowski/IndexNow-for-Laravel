@@ -18,10 +18,7 @@ final class HttpOptionsTest extends TestCase
         self::assertSame(5, $options->connectTimeout);
         self::assertSame(3, $options->retries);
         self::assertSame(250, $options->retryDelay);
-        self::assertSame(
-            'slimad-indexnow-laravel (+https://github.com/maciej-kosiedowski/IndexNow-for-Laravel)',
-            $options->userAgent,
-        );
+        self::assertSame('slimad/indexnow-laravel', $options->userAgent);
     }
 
     public function test_it_reads_every_value(): void
