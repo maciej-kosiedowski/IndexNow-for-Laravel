@@ -13,6 +13,10 @@ composer install
 A coverage driver (`pcov` or `xdebug`) is required for the coverage and mutation testing steps; the
 plain test suite runs without one.
 
+This repo also ships [pre-commit](https://pre-commit.com) hooks (`detect-secrets` and `gitleaks`)
+that scan staged changes for accidentally committed credentials. Run `pip install pre-commit &&
+pre-commit install` once so they run automatically on every commit.
+
 ### Working against a local copy of the core package
 
 The package depends on [`slimad/indexnow`](https://github.com/maciej-kosiedowski/IndexNow). To test
